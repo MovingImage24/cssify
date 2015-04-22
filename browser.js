@@ -1,7 +1,7 @@
 module.exports = function (css, customDocument) {
   var doc = customDocument || document;
   if (doc.createStyleSheet) {
-    var sheet = doc.createStyleSheet()
+    var sheet = doc.createStyleSheet();
     sheet.cssText = css;
     return sheet.ownerNode;
   } else {
@@ -9,6 +9,15 @@ module.exports = function (css, customDocument) {
         style = doc.createElement('style');
 
     style.type = 'text/css';
+
+    // START - replacement of relative mi24-player-font path with the absolute one
+    var scripts = document.querySelectorAll('script[src$="embed.js"],script[src$="embed.min.js"],script[src$="player.js"],script[src$="player.min.js"]');
+    var currentScript = scripts[scripts.length - 1].src;
+    var currentScriptChunks = currentScript.split('/');
+    var currentScriptFile = currentScriptChunks[currentScriptChunks.length - 1];
+    var absolutePath = currentScript.replace(currentScriptFile, '');
+    css = css.replace(/mi24-player-font\./g, absolutePath + 'mi24-player-font.');
+    // END - replacement of relative mi24-player-font path with the absolute one
 
     if (style.styleSheet) {
       style.styleSheet.cssText = css;
